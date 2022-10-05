@@ -1,4 +1,6 @@
-﻿
+﻿using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -26,6 +28,7 @@ public class EnemyController : MonoBehaviour
     //States
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
+    public bool attackPlayer = true;
 
     private void Awake()
     {
@@ -41,7 +44,7 @@ public class EnemyController : MonoBehaviour
 
         if (!playerInSightRange && !playerInAttackRange) Patroling();
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
-        if (playerInAttackRange && playerInSightRange) AttackPlayer();
+        if (playerInAttackRange && playerInSightRange && attackPlayer) AttackPlayer();
     }
 
     private void Patroling()
@@ -101,12 +104,20 @@ public class EnemyController : MonoBehaviour
     public void TakeDamage(int damage)
     {
         health -= damage;
-
+        UnityEngine.Debug.Log("Enemy Took Damage!");
         if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
     }
     private void DestroyEnemy()
     {
+        UnityEngine.Debug.Log("Enemy Destroyed!");
         Destroy(gameObject);
+    }
+
+    public void GetScared()
+    {
+        UnityEngine.Debug.Log("Scared Enemy!");
+        attackPlayer = false;
+        transform.localScale = new Vector3(transform.localScale.x / 2, transform.localScale.y / 2, transform.localScale.z / 2);
     }
 
     private void OnDrawGizmosSelected()
